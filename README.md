@@ -28,4 +28,14 @@ Por último para la evaluación del modelo, evaluamos el conjunto prueba analiza
 
 ## Breve explicación del modelo implementado.
 
+En el modelo implementado utilizamos 4 capas convolucionales con tamaño de kernel 3x3 y un número progresivo de filtros: 32, 64, 128, 256. Aplicamos normalización batch después de cada convolución en busca de estabilizar y acelerar el aprendizaje.
 
+Para las capas de max pooling buscamos reducir la dimesionalidad de las características quedándonos con las más relevantes y usando menor memoria, en nuestro modelo reducimos a la mitad al usar un stride de 2.
+
+En las capas completamentes conectadas (fully connected) tenemos una capa de 512 neuronas que usan una activación ReLu para permitir capturar más combinaciones de características. Y luego tenemos, la capa de salidad que tiene 3 neuronas y usa activación Softmax, que ayuda a convertir las salidad en probabilidades para cada nivel de daño.
+
+Para la regularización y optimización, utilizamos dropout con una probabilidad default de 0.5 para reducir el sobreajuste y mejorar la generalización del modelo en los nuevos datos. Para SGD utlizamos una tasa de aprendizaje de 0.0005 ya que vimos que al reducir mucho este rate, mejoraba el aprendizaje de nuestro modelo, también utilizamos un momentum de 0.9 que evita que los valores oscilen mucho.
+
+Para el StepLR fijamos 20 épocas, por lo que se irá reduciendo la tasa de aprendizaje cada que cumpla con esta cantidad, lo que evitará que se estanque en mínimos locales.
+
+Por último, entrenamos el modelo iterativamente a los largo de 50 épocas, dode en cada iteración calculamos las predicciones del modelo, medimos la pérdida, ajustamos los pesos nediante backpropagation en SGD, evaluamos el rendimiento y actualizamos la tasa de aprendizaje.
