@@ -2,6 +2,9 @@
 Tarea 1.- Red Neuronal con SGD
 
 Proyecto: Clasificación de daños en automóviles con redes neuronales convolucionales.
+###### Equipo:
+###### Ariana Escalante Herrera (216925)
+###### Sarah Margarita López Ramos (216639)
 
 ## Descripción del proyecto.
 
@@ -31,6 +34,7 @@ Por último para la evaluación del modelo, evaluamos el conjunto prueba analiza
 
 Al revisar las imágenes vimos que estas eran de distintos tamaños y entre todas las imágenes existían distintos patrones que complicaban la generalización del modelo, por esta razón decidimos hacer trasformaciones para los datos de entrenamiento y los datos de validación. 
 Para el entrenamiento: Definimos un resize a 224x224 porque menores eran insuficientes para el detalle que se necesitaba para un mejor accuracy, aplicamos RandomHorizontalFlip que voltea la imagen horizontalmente con probabilidad de 0.5, RandomRotation que rota la imagen hasta 15 grados para que el modelo no dependa de la orientación, ColorJitter que cambia el brillo y constraste, RandomPerspective que aplica transformaciones de rotación y también de deformación, además, se convirtieron las imágenes a tensor y se normalizaron para mayor estabilidad.
+
 Para los datos de validación, no se aplicaron todas las transformaciones, ya que lo que buscábamos era poder generalizar en la base de aprendizaje y capturar los patrones correctamente en los de prueba, por lo que solo se aplicó el redimensionamiento, se convirtieron a tensor y se normalizaron las imágenes.
 
 En el modelo implementado utilizamos 4 capas convolucionales con tamaño de kernel 3x3 y un número progresivo de filtros: 32, 64, 128, 256. Aplicamos normalización batch después de cada convolución en busca de estabilizar y acelerar el aprendizaje.
@@ -51,9 +55,9 @@ Después de 50 épocas se obtuvo una exactitud de 64%, con una varianza relativa
 
 Al analizar las métricas por clases podemos ver que:
 
-1. Clase 0 (minor): Obtuvo una precisión de casi 81%, es decir que de las veces que predijo esta clase acertó más del 80%, sin embargo el recall no fue tan alto como este con 71%.
+1. Clase 0 (minor): obtuvo una precisión de casi 81%, es decir que de las veces que predijo esta clase acertó más del 80%, sin embargo el recall no fue tan alto como este con 71%.
 
-2. Clase 1 (moderate): El modelo tiene problemas para identificar esta clase, la precisión fue la más baja, así como el F1-Score con 42%. Lo cual consideramos es congruente tomando en cuenta que es la clase intermedia.
+2. Clase 1 (moderate): el modelo tiene problemas para identificar esta clase, la precisión fue la más baja, así como el F1-Score con 42%. Lo cual consideramos es congruente tomando en cuenta que es la clase intermedia.
 
 3. Clase 2 (severe): esta clase obtuvo el recall más alto con 79%, lo que indica que de las veces que realmente eran choques severos si acertó en su mayoría de las veces en el modelo.
 
@@ -63,7 +67,7 @@ Al observar la matriz de confusión vemos en la diagonal las predicciones correc
 
 Derivado de los comentarios del Mtro. Mármol investigamos una aplicación "sencilla" de una red neuronal con la técnica de transfer learning para explorar una posible mejora a las métricas obtenidas hasta ahora.
 
-Tranfer Learning reutiliza modelos preentrenados en tareas nuevas en lugar de entrenar un modelo desde cero como lo hicimos en el paso anterior.
+Tranfer Learning reutiliza modelos preentrenados en tareas nuevas en lugar de entrenar un modelo desde cero como lo hicimos con la red convolucional.
 
 ## Ejercicio con Transfer Learning
 
@@ -80,3 +84,20 @@ Para el modelo, utilizamos el optimizador Adam en lugar de SGD, ya que este tien
 Utilizando Transfer Learning logramos incrementar la precisión en la última época en 4.84 puntos porcentuales (68.95%) en comparación con la red convolucional entrenada desde cero. Sin embargo, se observa un fuerte sobreajuste en el conjunto de entrenamiento, a pesar de haber implementado un dropout de 0.6 como regularizador.
 
 Como se mencionó anteriormente, para mitigar el sobreajuste se congelaron las primeras capas del modelo, no obstante, el sobreajuste sigue siendo significativo, lo que indica la necesidad de seguir ajustando la estrategia de entrenamiento.
+
+En cuanto a las métricas por clase, la clase de choques menores obtuvo un mejor desempeño, con un F1-Score del 78.85%, manteniéndose como la categoría mejor clasificada. Le sigue la clase 2, mientras que la clase 1, aunque sigue siendo la más difícil de predecir, mejoró su F1-Score a 50% representando un aumento de 8 puntos porcentuales respecto al modelo anterior.
+
+En la matriz de confusión observamos que el número de predicciones correctas (en la diagonal) fue mayor para todas las clases respecto al modelo anterior, excepto para la clase de choques severos, aunque el F1-Score aumentó de 70% a 75%.
+
+En conclusión vemos que, a nivel general, este modelo de Transfer Learning con ResNet18 presentó un mejor rendimiento que la red convolucional, esto se debe a que aprovecha el conocimiento de modelos preentrenados, mientras que el primer modelo inicia desde cero. Sin embargo, hay un margen de mejora en nuestro modelo, la matriz de confusión muestra que una de las clases sigue siendo difícil de distinguir, lo que indica que podríamos explorar parámetros adicionales en nuestro modelo como ajustar más capas del modelo usando fine-tuning.
+
+## Referencias:
+
+NOTA: Las imágenes y gráficas mencionadas en el texto se encuentran en el código que se anexa.
+
+1. Datt, K. (2023). Calculating output dimensions in a CNN for convolution and pooling layers with Keras. Medium. https://kvirajdatt.medium.com/calculating-output-dimensions-in-a-cnn-for-convolution-and-pooling-layers-with-keras-682960c73870
+2. PyTorch. (n.d.). torch.nn.Conv2d. PyTorch Documentation. https://pytorch.org/docs/stable/generated/torch.nn.Conv2d.html
+3. Towards Data Science. (2019). Conv2d: To finally understand what happens in the forward pass. Medium. https://medium.com/towards-data-science/conv2d-to-finally-understand-what-happens-in-the-forward-pass-1bbaafb0b148
+4. Hyperkai. (2020). RandomHorizontalFlip in PyTorch. DEV Community. https://dev.to/hyperkai/randomhorizontalflip-in-pytorch-57c3
+5. GeeksforGeeks. (2021). Python PyTorch RandomHorizontalFlip function. GeeksforGeeks. https://www.geeksforgeeks.org/python-pytorch-randomhorizontalflip-function/
+6. Hassan, E., Shams, M.Y., Hikal, N.A, y Elmoufy S. (2023). The effect of choosing optimizer algorithms to improve computer vision tasks: a comparative study. Multimed Tools Appl 82, 16591–16633. https://doi.org/10.1007/s11042-022-13820-0
